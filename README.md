@@ -1,1 +1,1 @@
-# barnhill_ij_toolkit alpha (c) 2015 Eric Barnhill.
+# Eric Barnhill ImageJ Toolkit (c) 2015 Eric Barnhill. MIT License in license.txt
