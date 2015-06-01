@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+ <project name="Barnhill_IJ_Toolkit" default="buildall">
+ 	<property name="src" location="src" />
+ 	<property name="build" location="bin" />
+ 	<property name="dist"  location="dist" />
+ 	<property name="fiji.dir"  location="/home/ericbarnhill/fiji/plugins" />
+ 	<property name="user.name" value="Eric Barnhill" /> 
+ 	<target name="init">
+        <echo>Running target init</echo>
+     </target>
+ 	<target name="buildall" depends="compress, local.fiji, distrib" />
+ 	<target name="main" depends="compress" description="Main target">
+ 		<echo>
+ 			Building ESP .jar files.
+ 		</echo>
+ 	</target>
+ 	<target name="compress" depends="" description="generate the distribution">
+ 	 	<jar jarfile="Barnhill_IJ_Toolkit.jar">
+ 	 		<fileset dir="${build}" includes="**/*.*" />
+ 	 		
+ 	 		<manifest>
+ 	 		 	<attribute name="Built-By" value="${user.name}"/>
+ 	 		</manifest>
+ 	 	</jar>
+ 	</target>
+ 	<target name="local.fiji" depends="compress" description="distribute to local fiji folder">
+ 		<echo>
+ 		 	Distributing to local FIJI
+ 		</echo>
+ 	    <copy file="Barnhill_IJ_Toolkit.jar" toDir="${fiji.dir}" />
+ 	  </target>
+ 	<target name="distrib" depends="compress" description="distribute to git repository"> 
+ 		<echo>
+ 		 	Distributing to git repo
+ 		</echo>
+ 	    <copy file="Barnhill_IJ_Toolkit.jar" toDir="${dist}" />
+ 	</target>
+  </project>
