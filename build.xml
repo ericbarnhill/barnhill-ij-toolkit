@@ -20,7 +20,7 @@
  	<target name="compress" depends="" description="generate the distribution">
  	 	<jar jarfile="Barnhill_IJ_Toolkit.jar">
  	 		<fileset dir="${build}" includes="**/*.*" />
- 	 		
+ 	 		<fileset dir="." includes="plugins.config" />
  	 		<manifest>
  	 		 	<attribute name="Built-By" value="${user.name}"/>
  	 		</manifest>

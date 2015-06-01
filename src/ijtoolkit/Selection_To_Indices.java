@@ -22,6 +22,7 @@ public class Selection_To_Indices implements PlugInFilter {
 		FloatPolygon fp = roi.getFloatPolygon();
 		StringBuilder sb = new StringBuilder();
 		int index = 0;
+		boolean containsEntry = false;
 		/*
 		for (int i = 0; i < fp.npoints; i++) {
 			index = fp.xpoints[i] + w*fp.ypoints[i];
@@ -32,13 +33,17 @@ public class Selection_To_Indices implements PlugInFilter {
 		for (int x = 0; x < w; x++) {
 			for (int y = 0; y < h; y++) {
 				if ( roi.contains(x, y) ) {
-					index = x + y*w;
+					index = y + x*h;
 					sb.append(Integer.toString(index));
 					sb.append(",");
+					containsEntry = true;
 				}
 			}
-			sb.append("...");
-			sb.append(System.getProperty("line.separator"));
+			if (containsEntry) {
+				sb.append("...");
+				sb.append(System.getProperty("line.separator"));
+				containsEntry = false;
+			}
 		}
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
         Clipboard clipboard = toolkit.getSystemClipboard();
