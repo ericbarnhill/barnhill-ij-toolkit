@@ -3,6 +3,9 @@
  	<property name="src" location="src" />
  	<property name="build" location="bin" />
  	<property name="dist"  location="dist" />
+ 	<property name="matlab" location="matlab" />
+ 	<property name="matlabmre" location="/home/ericbarnhill/Documents/MATLAB/MRElastography" />
+ 	<property name="fiji.root"  location="/home/ericbarnhill/fiji" />
  	<property name="fiji.dir"  location="/home/ericbarnhill/fiji/plugins" />
  	<property name="user.name" value="Eric Barnhill" /> 
  	<target name="init">
@@ -33,6 +36,8 @@
  		<echo>
  		 	Distributing to git repo
  		</echo>
- 	    <copy file="Barnhill_IJ_Toolkit.jar" toDir="${dist}" />
+ 	    <move file="Barnhill_IJ_Toolkit.jar" toDir="${dist}" /> 
+ 		<copy file="${fiji.root}/scripts/Miji.m" toDir="${matlab}" />
+ 		<copy file="${matlabmre}/openImage.m" toDir="${matlab}" />
  	</target>
   </project>
