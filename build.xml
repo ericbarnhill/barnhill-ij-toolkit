@@ -39,5 +39,7 @@
  	    <move file="Barnhill_IJ_Toolkit.jar" toDir="${dist}" /> 
  		<copy file="${fiji.root}/scripts/Miji.m" toDir="${matlab}" />
  		<copy file="${matlabmre}/openImage.m" toDir="${matlab}" />
+ 		<copy file="${matlabmre}/roi_to_vector.m" toDir="${matlab}" />
+ 		<copy file="${matlabmre}/vector_to_roi.m" toDir="${matlab}" />
  	</target>
   </project>
