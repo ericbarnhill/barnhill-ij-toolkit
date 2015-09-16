@@ -107,7 +107,7 @@ boolean widthAuto, heightAuto, barHeightAuto, barWidthAuto;
 		path = IJ.getDirectory("luts");
 		if (!showDialog())  return;
 		writePreferences();
-	    ip = new FloatProcessor(width, height + fontHeight);
+	    ip = new FloatProcessor(width, height);
 	    title = new String("Legend_"+lut+"_"+min+"_"+max);
 	    lut = new String(path+lut);
 		imp = new ImagePlus(title, ip);
@@ -198,7 +198,7 @@ boolean widthAuto, heightAuto, barHeightAuto, barWidthAuto;
 	    // if height is set to auto, get height
 	    if (height == 0) {
 	    	heightAuto = true;
-	    	height = fontHeight * (ticks * 2 + 1) + yMargin*2;  	
+	    	height = fontHeight * ticks *2 + yMargin*2;  	
 	    }
 	    if (barHeight == 0) {
 	    	barHeightAuto = true;
@@ -226,7 +226,7 @@ boolean widthAuto, heightAuto, barHeightAuto, barWidthAuto;
 	    o = new Overlay();
 	    Color c = getColor(fillColor);
 	    if (c!=null) {
-	        Roi r = new Roi(0,0,width,height+fontHeight);
+	        Roi r = new Roi(0,0,width,height);
 	        r.setFillColor(c);
 	        o.add(r);
 	    }
@@ -248,15 +248,13 @@ boolean widthAuto, heightAuto, barHeightAuto, barWidthAuto;
 	    for (int i = 0; i<(int)(barHeight); i++) {
 	        int iMap = (int)Math.floor((i*mapSize)/(barHeight));
 	        int j = (int)(barHeight) - i - 1;
-	        Line line = new Line(xMargin, yMargin + j + fontHeight/2.0, xMargin+barWidth, yMargin + j + fontHeight/2.0);
+	        Line line = new Line(xMargin, yMargin + j, xMargin+barWidth, yMargin + j);
 	        line.setStrokeColor(new Color(rLUT[iMap]&0xff, gLUT[iMap]&0xff, bLUT[iMap]&0xff));
 	        line.setStrokeWidth(1.0001);
 	        o.add(line);
-	        System.out.println(yMargin + j + fontHeight/2.0);
 	    }  
-	    System.out.println("--"+ (yMargin + fontHeight/2.0));
 	    Color c = getColor(barOutlineColor);
-	    Roi r = new Roi(xMargin, yMargin+fontHeight/2.0, barWidth, barHeight);
+	    Roi r = new Roi(xMargin, yMargin, barWidth, barHeight);
 	    r.setStrokeColor(c);
 	    r.setStrokeWidth(1.0);
 	    o.add(r);
@@ -275,10 +273,9 @@ boolean widthAuto, heightAuto, barHeightAuto, barWidthAuto;
 	    int maxLength = 0;
 	    for (int i = 0; i < ticks; i++) {
 	        int yLabel = (int)(Math.round( barHeight + yMargin - i*barStep - 1));
-	        System.out.println(yLabel);
 	        double tick = min + (max-min)/((double)ticks-1) * i;
 	        //TextRoi label = new TextRoi( xMargin*2+barWidth, yLabel + fontHeight/2.0, IJ.d2s(tick,decimalPlaces),f);
-	        TextRoi label = new TextRoi( xMargin+barWidth*2, yLabel, IJ.d2s(tick,decimalPlaces),f);
+	        TextRoi label = new TextRoi( xMargin+barWidth*2, yLabel - fontHeight/2.0, IJ.d2s(tick,decimalPlaces),f);
 	        label.setStrokeColor(c);
 	        o.add(label);
 	        int iLength = metrics.stringWidth(IJ.d2s(tick,decimalPlaces));
