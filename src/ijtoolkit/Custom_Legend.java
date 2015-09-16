@@ -102,188 +102,191 @@ boolean widthAuto, heightAuto, barHeightAuto, barWidthAuto;
 	final String BARHEIGHT = "barHeight";
 	final String BARWIDTH = "barWidth";
 
-public void run(String arg) {
-	readPreferences();
-	path = IJ.getDirectory("luts");
-	if (!showDialog())  return;
-	writePreferences();
-    ip = new FloatProcessor(width, height + fontHeight);
-    title = new String("Legend_"+lut+"_"+min+"_"+max);
-    lut = new String(path+lut);
-	imp = new ImagePlus(title, ip);
-	try {
-		m = LutLoader.open(lut);
-	} catch (IOException e) { IJ.showMessage("IO Exception. LUT probably not valid.");}
-	drawLegend();
-	imp = imp.flatten();
-	imp.show();
-}
-
-
-private boolean showDialog() {
-	GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();         
-	fonts = env.getAvailableFontFamilyNames();
-	int arialIndex = 0;
-	for (int n = 0; n < fonts.length; n++) {
-		if (fonts[n].equalsIgnoreCase("Arial")) {
-			arialIndex = n;
-			break;
-		}
+	public void run(String arg) {
+		readPreferences();
+		path = IJ.getDirectory("luts");
+		if (!showDialog())  return;
+		writePreferences();
+	    ip = new FloatProcessor(width, height + fontHeight);
+	    title = new String("Legend_"+lut+"_"+min+"_"+max);
+	    lut = new String(path+lut);
+		imp = new ImagePlus(title, ip);
+		try {
+			m = LutLoader.open(lut);
+		} catch (IOException e) { IJ.showMessage("IO Exception. LUT probably not valid.");}
+		drawLegend();
+		imp = imp.flatten();
+		imp.show();
 	}
-	luts = getLuts();
-    gd = new GenericDialog("Custom Legend");
-    gd.addChoice("LUT", luts, lut);
-    gd.addNumericField("Min:", min, 0);
-    gd.addNumericField("Max:", max, 0);
-    gd.addNumericField("Num Ticks:", ticks, 0);
-    gd.addNumericField("Decimal places:", decimalPlaces, 0);
-    gd.addNumericField("Font size:", fontSize, 0);
-    gd.addChoice("Font:", fonts, font);
-    gd.addNumericField("X Margin:", xMargin, 0);
-    gd.addNumericField("Y Margin:", yMargin, 0);
-    gd.addChoice("Fill color: ", colors, fillColor);
-    gd.addChoice("Text color: ", colors, textColor);
-    gd.addChoice("Box outline color: ", colors, boxOutlineColor);
-    gd.addChoice("Bar outline color: ", colors, barOutlineColor);
-    gd.addNumericField("Legend Height (Zero=Auto): ", height, 0);
-    gd.addNumericField("Legend Width (Zero=Auto):", width, 0);
-    gd.addNumericField("Color Bar Height (Zero=Auto): ", barHeight, 0);
-    gd.addNumericField("Color Bar Width (Zero=Auto):", barWidth, 0);
-    gd.setInsets(10, 30, 0);
-    gd.showDialog();              
-    if (gd.wasCanceled())
-        return false;
-    lut = gd.getNextChoice();
-    min = gd.getNextNumber();
-    max = gd.getNextNumber();
-    ticks = (int)gd.getNextNumber();
-    decimalPlaces = (int)gd.getNextNumber();
-    fontSize = (int)gd.getNextNumber();
-    font = gd.getNextChoice();
-    fillColor = gd.getNextChoice();
-    textColor = gd.getNextChoice();
-    xMargin = (int)gd.getNextNumber();
-    yMargin = (int)gd.getNextNumber();
-    boxOutlineColor = gd.getNextChoice();
-    barOutlineColor = gd.getNextChoice();
-    height = (int)gd.getNextNumber();
-    width = (int)gd.getNextNumber();
-    barHeight = (int)gd.getNextNumber();
-    barWidth = (int)gd.getNextNumber();
-    f = new Font(font, Font.PLAIN, fontSize);
-    // offscreen image to get font metrics and add to margin
-    Image img = GUI.createBlankImage(128, 64);
-    Graphics g = img.getGraphics();
-    metrics = g.getFontMetrics(f);
-    fontHeight = metrics.getHeight();
-    // if width is set to auto, get width
-    if (width == 0) {
-    	widthAuto = true;
-    	int length1 = metrics.stringWidth(IJ.d2s(max, decimalPlaces+2));
-    	int length2 = metrics.stringWidth(IJ.d2s(min, decimalPlaces+2));
-    	width = (length1>length2) ? length1 : length2;  
-    }
-    if (barWidth == 0) {
-    	barWidthAuto = true;
-    	barWidth = (int)Math.round(width / 4.0);
-    	if (widthAuto == true) {
-    		width += barWidth + xMargin*2;
-    	}
-    } else {
-    	if (widthAuto == true) {
-    		width += barWidth;
-    	}
-    	width += xMargin*2;
-    }
-    // if height is set to auto, get height
-    if (height == 0) {
-    	heightAuto = true;
-    	height = fontHeight * ticks * 2 + yMargin*2;  	
-    }
-    if (barHeight == 0) {
-    	barHeightAuto = true;
-    	barHeight = height - yMargin*2;
-    }
-    return true;
-}
-
-private String[] getLuts() {
-	File f = new File(path);
-	String[] list = null;
-	if (f.exists() && f.isDirectory())
-	list = f.list();
-	List<String> luts = new ArrayList<String>();
-	for (String s : list) {
-		if ( s.endsWith(".lut") ) {
-			luts.add(s);
+	
+	
+	private boolean showDialog() {
+		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();         
+		fonts = env.getAvailableFontFamilyNames();
+		int arialIndex = 0;
+		for (int n = 0; n < fonts.length; n++) {
+			if (fonts[n].equalsIgnoreCase("Arial")) {
+				arialIndex = n;
+				break;
+			}
 		}
+		luts = getLuts();
+	    gd = new GenericDialog("Custom Legend");
+	    gd.addChoice("LUT", luts, lut);
+	    gd.addNumericField("Min:", min, 0);
+	    gd.addNumericField("Max:", max, 0);
+	    gd.addNumericField("Num Ticks:", ticks, 0);
+	    gd.addNumericField("Decimal places:", decimalPlaces, 0);
+	    gd.addNumericField("Font size:", fontSize, 0);
+	    gd.addChoice("Font:", fonts, font);
+	    gd.addNumericField("X Margin:", xMargin, 0);
+	    gd.addNumericField("Y Margin:", yMargin, 0);
+	    gd.addChoice("Fill color: ", colors, fillColor);
+	    gd.addChoice("Text color: ", colors, textColor);
+	    gd.addChoice("Box outline color: ", colors, boxOutlineColor);
+	    gd.addChoice("Bar outline color: ", colors, barOutlineColor);
+	    gd.addNumericField("Legend Height (Zero=Auto): ", height, 0);
+	    gd.addNumericField("Legend Width (Zero=Auto):", width, 0);
+	    gd.addNumericField("Color Bar Height (Zero=Auto): ", barHeight, 0);
+	    gd.addNumericField("Color Bar Width (Zero=Auto):", barWidth, 0);
+	    gd.setInsets(10, 30, 0);
+	    gd.showDialog();              
+	    if (gd.wasCanceled())
+	        return false;
+	    lut = gd.getNextChoice();
+	    min = gd.getNextNumber();
+	    max = gd.getNextNumber();
+	    ticks = (int)gd.getNextNumber();
+	    decimalPlaces = (int)gd.getNextNumber();
+	    fontSize = (int)gd.getNextNumber();
+	    font = gd.getNextChoice();
+	    fillColor = gd.getNextChoice();
+	    textColor = gd.getNextChoice();
+	    xMargin = (int)gd.getNextNumber();
+	    yMargin = (int)gd.getNextNumber();
+	    boxOutlineColor = gd.getNextChoice();
+	    barOutlineColor = gd.getNextChoice();
+	    height = (int)gd.getNextNumber();
+	    width = (int)gd.getNextNumber();
+	    barHeight = (int)gd.getNextNumber();
+	    barWidth = (int)gd.getNextNumber();
+	    f = new Font(font, Font.PLAIN, fontSize);
+	    // offscreen image to get font metrics and add to margin
+	    Image img = GUI.createBlankImage(128, 64);
+	    Graphics g = img.getGraphics();
+	    metrics = g.getFontMetrics(f);
+	    fontHeight = metrics.getHeight();
+	    // if width is set to auto, get width
+	    if (width == 0) {
+	    	widthAuto = true;
+	    	int length1 = metrics.stringWidth(IJ.d2s(max, decimalPlaces));
+	    	int length2 = metrics.stringWidth(IJ.d2s(min, decimalPlaces));
+	    	width = (length1>length2) ? length1 : length2;  
+	    }
+	    if (barWidth == 0) {
+	    	barWidthAuto = true;
+	    	barWidth = (int)Math.round(width / 4.0);
+	    	if (widthAuto == true) {
+	    		width += barWidth*2 + xMargin*2;
+	    	}
+	    } else {
+	    	if (widthAuto == true) {
+	    		width += barWidth*2 + xMargin*2;
+	    	}
+	    	width += xMargin*2;
+	    }
+	    // if height is set to auto, get height
+	    if (height == 0) {
+	    	heightAuto = true;
+	    	height = fontHeight * (ticks * 2 + 1) + yMargin*2;  	
+	    }
+	    if (barHeight == 0) {
+	    	barHeightAuto = true;
+	    	//barHeight = height - yMargin*2;
+	    	barHeight = height - yMargin*2;
+	    }
+	    return true;
 	}
-	return luts.toArray(new String[luts.size()]);
-}
-
-private void drawLegend() {
-    o = new Overlay();
-    Color c = getColor(fillColor);
-    if (c!=null) {
-        Roi r = new Roi(0,0,width,height+fontHeight);
-        r.setFillColor(c);
-        o.add(r);
-    }
-    addVerticalColorBar();
-    addText();
-    c = getColor(boxOutlineColor);
-    imp.setOverlay(o);
-}
-
-    private void addVerticalColorBar() {
-        
-    	int mapSize = m.getMapSize();
-        byte[] rLUT = new byte[mapSize];
-        byte[] gLUT = new byte[mapSize];
-        byte[] bLUT = new byte[mapSize];
-        m.getReds(rLUT);
-        m.getGreens(gLUT);
-        m.getBlues(bLUT);
-        for (int i = 0; i<(int)(barHeight); i++) {
-            int iMap = (int)Math.floor((i*mapSize)/(barHeight));
-            int j = (int)(barHeight) - i - 1;
-            Line line = new Line(xMargin, yMargin*2 + j, xMargin+barWidth, yMargin*2 + j);
-            line.setStrokeColor(new Color(rLUT[iMap]&0xff, gLUT[iMap]&0xff, bLUT[iMap]&0xff));
-            line.setStrokeWidth(1.0001);
-            o.add(line);
-        }  
-        
-        Color c = getColor(barOutlineColor);
-        Roi r = new Roi(xMargin, yMargin, barWidth, barHeight);
-        r.setStrokeColor(c);
-        r.setStrokeWidth(1.0);
-        o.add(r);
-        
-    }
-
-    private int addText() {
-
-        Color c = getColor(textColor);
-        double barStep = (double)(barHeight) ;
-        if (ticks > 2) {
-            barStep /= ((double)ticks - 1.0);
-        }
-       
-        //Blank offscreen image for font metrics
-        int maxLength = 0;
-        for (int i = 0; i < ticks; i++) {
-            int yLabel = (int)(Math.round( barHeight - i*barStep - 1));
-            double tick = min + (max-min)/((double)ticks-1) * i;
-            //TextRoi label = new TextRoi( xMargin*2+barWidth, yLabel + fontHeight/2.0, IJ.d2s(tick,decimalPlaces),f);
-            TextRoi label = new TextRoi( xMargin*2+barWidth, yMargin*2 + yLabel - fontHeight/2.0, IJ.d2s(tick,decimalPlaces),f);
-            label.setStrokeColor(c);
-            o.add(label);
-            int iLength = metrics.stringWidth(IJ.d2s(tick,decimalPlaces));
-            if (iLength > maxLength)
-                maxLength = iLength;
-        }
-        return maxLength;
-    }
+	
+	private String[] getLuts() {
+		File f = new File(path);
+		String[] list = null;
+		if (f.exists() && f.isDirectory())
+		list = f.list();
+		List<String> luts = new ArrayList<String>();
+		for (String s : list) {
+			if ( s.endsWith(".lut") ) {
+				luts.add(s);
+			}
+		}
+		return luts.toArray(new String[luts.size()]);
+	}
+	
+	private void drawLegend() {
+	    o = new Overlay();
+	    Color c = getColor(fillColor);
+	    if (c!=null) {
+	        Roi r = new Roi(0,0,width,height+fontHeight);
+	        r.setFillColor(c);
+	        o.add(r);
+	    }
+	    addVerticalColorBar();
+	    addText();
+	    c = getColor(boxOutlineColor);
+	    imp.setOverlay(o);
+	}
+	
+	private void addVerticalColorBar() {
+	    
+		int mapSize = m.getMapSize();
+	    byte[] rLUT = new byte[mapSize];
+	    byte[] gLUT = new byte[mapSize];
+	    byte[] bLUT = new byte[mapSize];
+	    m.getReds(rLUT);
+	    m.getGreens(gLUT);
+	    m.getBlues(bLUT);
+	    for (int i = 0; i<(int)(barHeight); i++) {
+	        int iMap = (int)Math.floor((i*mapSize)/(barHeight));
+	        int j = (int)(barHeight) - i - 1;
+	        Line line = new Line(xMargin, yMargin + j + fontHeight/2.0, xMargin+barWidth, yMargin + j + fontHeight/2.0);
+	        line.setStrokeColor(new Color(rLUT[iMap]&0xff, gLUT[iMap]&0xff, bLUT[iMap]&0xff));
+	        line.setStrokeWidth(1.0001);
+	        o.add(line);
+	        System.out.println(yMargin + j + fontHeight/2.0);
+	    }  
+	    System.out.println("--"+ (yMargin + fontHeight/2.0));
+	    Color c = getColor(barOutlineColor);
+	    Roi r = new Roi(xMargin, yMargin+fontHeight/2.0, barWidth, barHeight);
+	    r.setStrokeColor(c);
+	    r.setStrokeWidth(1.0);
+	    o.add(r);
+	    
+	}
+	
+	private int addText() {
+	
+	    Color c = getColor(textColor);
+	    double barStep = (double)(barHeight) ;
+	    if (ticks > 2) {
+	        barStep /= ((double)ticks - 1.0);
+	    }
+	   
+	    //Blank offscreen image for font metrics
+	    int maxLength = 0;
+	    for (int i = 0; i < ticks; i++) {
+	        int yLabel = (int)(Math.round( barHeight + yMargin - i*barStep - 1));
+	        System.out.println(yLabel);
+	        double tick = min + (max-min)/((double)ticks-1) * i;
+	        //TextRoi label = new TextRoi( xMargin*2+barWidth, yLabel + fontHeight/2.0, IJ.d2s(tick,decimalPlaces),f);
+	        TextRoi label = new TextRoi( xMargin+barWidth*2, yLabel, IJ.d2s(tick,decimalPlaces),f);
+	        label.setStrokeColor(c);
+	        o.add(label);
+	        int iLength = metrics.stringWidth(IJ.d2s(tick,decimalPlaces));
+	        if (iLength > maxLength)
+	            maxLength = iLength;
+	    }
+	    return maxLength;
+	}
 
 
     Color getColor(String color) {
