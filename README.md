@@ -3,7 +3,7 @@
 The Barnhill ImageJ Toolkit 
 (c) Eric Barnhill 2016 All Rights Reserved.
 
-This package provides some useful tools for ImageJ and Fiji.
+This package provides some useful tools for ImageJ and Fiji. To install, drag the .jar file located in "dist" to your ImageJ or Fiji plugins folder.
 
 Custom Legend: Design a legend in an independent window using a LUT of your choice and to your own specifications. This plugin is an extension of the Calibration Bar functionality.
 
