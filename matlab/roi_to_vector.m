@@ -4,7 +4,7 @@ function [v] = roi_to_vector(mij_instance)
 % It will convert an ImageJ ROI to a vector of selection indices
 % Example usage: [v] = roi_to_vector(MIJ);
 % nb: Before running script, make sure the desired image and ROI in ImageJ are
-% selected
+% selected+++
 
 mij_instance.run('Selection_To_Indices');
 v = str2num(clipboard('paste'));

@@ -4,9 +4,12 @@
  	<property name="build" location="bin" />
  	<property name="dist"  location="dist" />
  	<property name="matlab" location="matlab" />
- 	<property name="matlabmre" location="/home/ericbarnhill/Documents/MATLAB/MRElastography" />
- 	<property name="fiji.root"  location="/home/ericbarnhill/fiji" />
- 	<property name="fiji.dir"  location="/home/ericbarnhill/fiji/plugins" />
+	<property name="home" location="/home/ericbarnhill"/>
+ 	<property name="code" location="${home}/Documents/code" />
+ 	<property name="matlabmre" location="${home}/Documents/MATLAB/MRElastography" />
+ 	<property name="fiji.root"  location="/home/ericbarnhill/Fiji.app" />
+ 	<property name="fiji.dir"  location="/home/ericbarnhill/Fiji.app/plugins" />
+ 	<property name="commons.math" location="${code}/commons-math-fork/commons-math/target/classes/" />
  	<property name="user.name" value="Eric Barnhill" /> 
  	<target name="init">
         <echo>Running target init</echo>
@@ -19,10 +22,13 @@
  	</target>
  	<target name="compress" depends="" description="generate the distribution">
  	 	<jar jarfile="Barnhill_IJ_Toolkit.jar">
+ 	 		<fileset dir="${src}" includes="**/*.*" />
  	 		<fileset dir="${build}" includes="**/*.*" />
  	 		<fileset dir="." includes="plugins.config" />
+            <fileset dir="${commons.math}"/>
  	 		<manifest>
  	 		 	<attribute name="Built-By" value="${user.name}"/>
+ 	 			<attribute name="Class-Path" value="."/>
  	 		</manifest>
  	 	</jar>
  	</target>
@@ -32,9 +38,9 @@
  		</echo>
  	    <copy file="Barnhill_IJ_Toolkit.jar" toDir="${fiji.dir}" />
  	  </target>
- 	<target name="distrib" depends="compress" description="distribute to git repository"> 
+ 	<target name="distrib" depends="compress" description="distribute to jar"> 
  		<echo>
- 		 	Distributing to git repo
+ 		 	Distributing to dist/ and matlab/
  		</echo>
  	    <move file="Barnhill_IJ_Toolkit.jar" toDir="${dist}" /> 
  		<copy file="${fiji.root}/scripts/Miji.m" toDir="${matlab}" />

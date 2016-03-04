@@ -5,4 +5,4 @@
  * @author ericbarnhill
  *
  */
-package ijtoolkit;
+package com.ericbarnhill.ijtoolkit;

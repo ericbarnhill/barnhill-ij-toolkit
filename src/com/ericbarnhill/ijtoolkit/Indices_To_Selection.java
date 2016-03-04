@@ -1,7 +1,14 @@
-package ijtoolkit;
+package com.ericbarnhill.ijtoolkit;
 
 
-/** Selection To Indices, part of the Barnhill IJ Toolkit
+import java.awt.HeadlessException;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+import java.util.Scanner;
+
+/** Indices To Selection, part of the Barnhill IJ Toolkit
  * This PlugInFilter translates between an ImageJ ROI
  * and a matlab vector of selection indices
  * It can be used alone but is best used via the Matlab scripts
@@ -36,56 +43,49 @@ either expressed or implied, of the FreeBSD Project.
 */
 
 
-
 import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.Roi;
+import ij.gui.PolygonRoi;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-
-public class Selection_To_Indices implements PlugInFilter {
+public class Indices_To_Selection implements PlugInFilter {
 	
 	int h, w, d;
 	ImagePlus imp;
 	
 	@Override
 	public void run(ImageProcessor ip) {
-		Roi roi = imp.getRoi();
-		FloatPolygon fp = roi.getFloatPolygon();
-		StringBuilder sb = new StringBuilder();
-		int index = 0;
-		boolean containsEntry = false;
-		/*
-		for (int i = 0; i < fp.npoints; i++) {
-			index = fp.xpoints[i] + w*fp.ypoints[i];
-			sb.append(Integer.toString((int)index));
-			sb.append(",");
+		FloatPolygon fp = new FloatPolygon();
+		String indices = "";
+		try {
+			indices = (String) Toolkit.getDefaultToolkit()
+			        .getSystemClipboard().getData(DataFlavor.stringFlavor);
+		} catch (HeadlessException e) {
+			IJ.error("HeadlessException");
+			e.printStackTrace();
+		} catch (UnsupportedFlavorException e) {
+			IJ.error("Unsupported Data Flavor Exception");
+			e.printStackTrace();
+		} catch (IOException e) {
+			IJ.error("IO Exception");
+			e.printStackTrace();
+		} 
+		Scanner scanner = new Scanner(indices);
+		int index = 0; double x = 0; double y = 0;
+		@SuppressWarnings("unused")
+		int tally = 0;
+		while (scanner.hasNextInt()) {
+			tally++;
+			index = scanner.nextInt();
+			y = index % h;
+			x = Math.floor(index / h);
+			fp.addPoint(x, y);
 		}
-		*/
-		for (int x = 0; x < w; x++) {
-			for (int y = 0; y < h; y++) {
-				if ( roi.contains(x, y) ) {
-					index = y + x*h;
-					sb.append(Integer.toString(index));
-					sb.append(",");
-					containsEntry = true;
-				}
-			}
-			if (containsEntry) {
-				sb.append("...");
-				sb.append(System.getProperty("line.separator"));
-				containsEntry = false;
-			}
-		}
-		Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Clipboard clipboard = toolkit.getSystemClipboard();
-        clipboard.setContents(new StringSelection(sb.toString()), null);
-		
+		scanner.close();
+		PolygonRoi pr = new PolygonRoi(fp, 2);
+		imp.setRoi(pr);
 	}
 
 	@Override
